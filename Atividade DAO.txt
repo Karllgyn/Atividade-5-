@@ -1,0 +1,947 @@
+AlunoDAO.java
+
+ package dao;
+
+import java.util.List;
+import entities.Aluno;
+
+public interface AlunoDAO {
+    void insert(Aluno obj);
+    void update(Aluno obj);
+    void deleteById(Integer id);
+    Aluno findById(Integer id);
+    List<Aluno> findAll();
+}
+
+------------------------------------------------------------------
+
+package dao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import db.Database; // Assuming this class handles database connection management
+import entities.Aluno;
+
+public class AlunoDAOImpl implements AlunoDAO {
+    private Connection conexao;
+
+    public AlunoDAOImpl(Connection conexao) {
+        this.conexao = conexao;
+    }
+
+    @Override
+    public void insert(Aluno obj) {
+        // Implementation of the insert method
+    }
+
+    @Override
+    public void update(Aluno obj) {
+        // Implementation of the update method
+    }
+
+    @Override
+    public void deleteById(Integer id) {
+        // Implementation of the deleteById method
+    }
+
+    @Override
+    public Aluno findById(Integer id) {
+        // Implementation of the findById method
+        return null;
+    }
+
+    @Override
+    public List<Aluno> findAll() {
+        // Implementation of the findAll method
+        return new ArrayList<>();
+    }
+}
+
+-----------------------------------------------------------
+CursoDAO.java
+
+ package dao;
+
+import java.util.List;
+import entities.Curso;
+
+public interface CursoDAO {
+    void insert(Curso obj);
+    void update(Curso obj);
+    void deleteById(Integer id);
+    Curso findById(Integer id);
+    List<Curso> findAll();
+}
+
+
+--------------------------------------------------------
+CursoDAOImpl.java
+package dao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import db.Database;
+import entities.Curso;
+
+public class CursoDAOImpl implements CursoDAO {
+    private Connection conexao;
+
+    public CursoDAOImpl(Connection conexao) {
+        this.conexao = conexao;
+    }
+
+    @Override
+    public void insert(Curso obj) {
+        // Implementation of the insert method
+    }
+
+    @Override
+    public void update(Curso obj) {
+        // Implementation of the update method
+    }
+
+    @Override
+    public void deleteById(Integer id) {
+        // Implementation of the deleteById method
+    }
+
+    @Override
+    public Curso findById(Integer id) {
+        // Implementation of the findById method
+        return null;
+    }
+
+    @Override
+    public List<Curso> findAll() {
+        // Implementation of the findAll method
+        return new ArrayList<>();
+    }
+}
+
+-------------------------------------------------------------------------
+
+DisciplinaDAO.java
+
+package dao;
+
+import java.util.List;
+import entities.Disciplina;
+
+public interface DisciplinaDAO {
+    void insert(Disciplina obj);
+    void update(Disciplina obj);
+    void deleteById(Integer id);
+    Disciplina findById(Integer id);
+    List<Disciplina> findAll();
+}
+
+--------------------------------------------------------------------------------
+DisciplinaDAOImpl.java
+package dao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import db.DB;
+import entities.Disciplina;
+
+public class DisciplinaDAOImpl implements DisciplinaDAO {
+    private Connection conexao;
+
+    public DisciplinaDAOImpl(Connection conexao) {
+        this.conexao = conexao;
+    }
+
+    @Override
+    public void insert(Disciplina obj) {
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        try {
+            pst = conexao.prepareStatement(
+                "INSERT INTO disciplina (nomeDisciplina, cargahoraria) VALUES (?, ?)",
+                PreparedStatement.RETURN_GENERATED_KEYS
+            );
+
+            pst.setString(1, obj.getNomeDisciplina());
+            pst.setInt(2, obj.getCargahoraria());
+
+            int linhas = pst.executeUpdate();
+
+            if (linhas > 0) {
+                rs = pst.getGeneratedKeys();
+                if (rs.next()) {
+                    obj.setIdDisciplina(rs.getInt(1));
+                }
+                System.out.println("Disciplina [" + obj.getIdDisciplina() + " | " 
+                    + obj.getNomeDisciplina() + "]" + " foi criada com sucesso!");
+            } else {
+                System.out.println("Não foi possível se cadastrar na Disciplina!");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DB.dataPreparedStatement(pst);
+            DB.dataResultSet(rs);
+        }
+    }
+
+    @Override
+    public void update(Disciplina obj) {
+        PreparedStatement pst = null;
+        try {
+            pst = conexao.prepareStatement(
+                "UPDATE disciplina SET NomeDisciplina = ? WHERE IdDisciplina = ?"
+            );
+            pst.setString(1, obj.getNomeDisciplina());
+            pst.setInt(2, obj.getIdDisciplina());
+
+            int linhas = pst.executeUpdate();
+            if (linhas > 0) {
+                System.out.println("Disciplina [" + obj.getIdDisciplina() + " | " 
+                    + obj.getNomeDisciplina() + "]" + " alterada com sucesso!");
+            } else {
+                System.out.println("Não foi realizada a alteração da Disciplina!");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DB.dataPreparedStatement(pst);
+        }
+    }
+
+    @Override
+    public void deleteById(Integer id) {
+        PreparedStatement pst = null;
+        try {
+            pst = conexao.prepareStatement("DELETE FROM disciplina WHERE IdDisciplina = ?");
+            pst.setInt(1, id);
+
+            int linhas = pst.executeUpdate();
+            if (linhas > 0) {
+                System.out.println("Disciplina [" + id + "] excluída com sucesso!");
+            } else {
+                System.out.println("Não foi possível excluir a Disciplina id[" + id + "]!");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DB.dataPreparedStatement(pst);
+        }
+    }
+
+    @Override
+    public Disciplina findById(Integer id) {
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        try {
+            pst = conexao.prepareStatement("SELECT * FROM Disciplina WHERE IdDisciplina = ?");
+            pst.setInt(1, id);
+            rs = pst.executeQuery();
+            if
+
+------------------------------------------------------------------------------
+// FactorDAO.java
+package dao;
+
+import db.DB;
+
+public class FactoryDAO {
+
+    public static CursoDAO createCursoDAO() {
+        return new CursoDAOImpl(DB.getConexao());
+    }
+
+    public static AlunoDAO createAlunoDAO() {
+        return new AlunoDAOImpl(DB.getConexao());
+    }
+
+    public static DisciplinaDAO createDisciplinaDAO() {
+        return new DisciplinaDAOImpl(DB.getConexao());
+    }
+}
+
+---------------------------------------------------------------------------
+
+// DB.java
+package db;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Properties;
+
+public class DB {
+
+    private static Connection conexao;
+
+    public static Properties getPropriedades() {
+        Properties propriedades = new Properties();
+        try {
+            FileInputStream arquivo = new FileInputStream("./propriedades/db.properties");
+            propriedades.load(arquivo);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return propriedades;
+    }
+
+    public static Connection getConexao() {
+        try {
+            if (conexao == null) {
+                Properties p = DB.getPropriedades();
+                conexao = DriverManager.getConnection(p.getProperty("host"), p.getProperty("usuário"), p.getProperty("senha"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return conexao;
+    }
+
+    public static void dataConexao() {
+        if (conexao != null) {
+            try {
+                conexao.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void fechaPreparedStatement(PreparedStatement pst) {
+        if (pst != null) {
+            try {
+                pst.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void fechaResultSet(ResultSet rs) {
+        if (rs != null) {
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+
+-------------------------------------------------------------------------------
+Aluni.java
+modelo de pacote . entidades ;
+
+importar  java . . _ Data ;
+
+public  class  Aluno {
+
+	 id inteiro  privado ;
+	 string  privada nome ;
+	 sexo privado de cordas  ;
+	 data  privada dt_nasc ;
+	 Curso Curso  privado ;
+
+	public  Aluno () {
+
+	}
+
+	public  Aluno ( Integer  id , String  nome , String  sexo , Date  dt_nasc ) {
+		isso . id = id ;
+		isso . nome = nome ;
+		isso . sexo = sexo ;
+		isso . dt_nasc = dt_nasc ;
+	}
+
+	public  Aluno ( Integer  id , String  nome , String  sexo , Date  dt_nasc , Curso  curso ) {
+		isso . id = id ;
+		isso . nome = nome ;
+		isso . sexo = sexo ;
+		isso . dt_nasc = dt_nasc ;
+		isso . curso = curso ;
+	}
+
+	public  Integer  getId () {
+		 id de retorno ;
+	}
+
+	public  void  setId ( ID inteiro  ) {
+		isso . id = id ;
+	}
+
+	public  String  getNome () {
+		 nome de retorno ;
+	}
+
+	public  void  setNome ( String  nome ) {
+		isso . nome = nome ;
+	}
+
+	public  String  getSexo () {
+		voltar  sexo ;
+	}
+
+	public  void  setSexo ( String  sexo ) {
+		isso . sexo = sexo ;
+	}
+
+	 data  pública getDt_nasc () {
+		return  dt_nasc ;
+	}
+
+	public  void  setDt_nasc ( Data  dt_nasc ) {
+		isso . dt_nasc = dt_nasc ;
+	}
+
+	public  Curso  getCurso () {
+		 cursor de retorno ;
+	}
+
+	public  void  setCurso ( Curso  curso ) {
+		isso . curso = curso ;
+	}
+
+	@ Substituir
+	public  int  hashCode () {
+		final  int  primo = 31 ;
+		int  resultado = 1 ;
+		resultado = primo * resultado + (( dt_nasc == null ) ? 0 : dt_nasc . hashCode ());
+		resultado = primo * resultado + (( id == null ) ? 0 : id . hashCode ());
+		resultado = primo * resultado + (( nome == null ) ? 0 : nome . hashCode ());
+		resultado = primo * resultado + (( sexo == null ) ? 0 : sexo . hashCode ());
+		 resultado de retorno ;
+	}
+
+	@ Substituir
+	public  boolean  equals ( Object  obj ) {
+		se ( este == obj )
+			retorna  verdadeiro ;
+		if ( obj == nulo )
+			retorna  falso ;
+		if ( getClass () != obj . getClass ())
+			retorna  falso ;
+		Aluno  outro = ( Aluno ) obj ;
+		if ( dt_nasc == nulo ) {
+			if ( outro . dt_nasc != null )
+				retorna  falso ;
+		} else  if (! dt_nasc . equals ( other . dt_nasc ))
+			retorna  falso ;
+		if ( id == null ) {
+			if ( outro . id != null )
+				retorna  falso ;
+		} else  if (! id . equals ( other . id ))
+			retorna  falso ;
+		if ( nome == nulo ) {
+			if ( outro . nome != null )
+				retorna  falso ;
+		} else  if (! nome . equals ( outro . nome ))
+			retorna  falso ;
+		if ( sexo == nulo ) {
+			if ( outro . sexo != nulo )
+				retorna  falso ;
+		} else  if (! sexo . equals ( outro . sexo ))
+			retorna  falso ;
+		retorna  verdadeiro ;
+	}
+}
+------------------------------------------------------------------------------
+// Curso.java
+package entidades;
+
+public class Curso {
+
+    private Integer idcurso;
+    private String nomecurso;
+
+    public Curso() {}
+
+    public Curso(Integer idcurso, String nomecurso) {
+        this.idcurso = idcurso;
+        this.nomecurso = nomecurso;
+    }
+
+    // Getters and setters, hashCode, equals, and toString methods
+}
+
+--------------------------------------------------------------------------------
+Disciplina.java
+modelo de pacote . entidades ;
+
+public  class  Disciplina {
+
+	private  int  idDisciplina ;
+	private  String  nomeDisciplina ;
+	 cargahoraria privada int  ;
+
+	 Disciplina pública () {
+
+	}
+
+	public  Disciplina ( int  idDisciplina , String  nomeDisciplina , int  cargahoraria ) {
+		isso . idDisciplina = idDisciplina ;
+		isso . nomeDisciplina = nomeDisciplina ;
+		isso . cargahoraria = cargahoraria ;
+	}
+
+	public  int  getIdDisciplina () {
+		return  idDisciplina ;
+	}
+
+	public  void  setIdDisciplina ( int  idDisciplina ) {
+		isso . idDisciplina = idDisciplina ;
+	}
+
+	public  String  getNomeDisciplina () {
+		return  nomeDisciplina ;
+	}
+
+	public  void  setNomeDisciplina ( String  nomeDisciplina ) {
+		isso . nomeDisciplina = nomeDisciplina ;
+	}
+
+	public  int  getCargahoraria () {
+		devolver  cargahoraria ;
+	}
+
+	public  void  setCargahoraria ( int  cargahoraria ) {
+		isso . cargahoraria = cargahoraria ;
+	}
+
+	@ Substituir
+	public  int  hashCode () {
+		final  int  primo = 31 ;
+		int  resultado = 1 ;
+		resultado = primo * resultado + cargahoraria ;
+		resultado = prime * resultado + idDisciplina ;
+		resultado = primo * resultado + (( nomeDisciplina == null ) ? 0 : nomeDisciplina . hashCode ());
+		 resultado de retorno ;
+	}
+
+	@ Substituir
+	public  boolean  equals ( Object  obj ) {
+		se ( este == obj )
+			retorna  verdadeiro ;
+		if ( obj == nulo )
+			retorna  falso ;
+		if ( getClass () != obj . getClass ())
+			retorna  falso ;
+		Disciplina  outro = ( Disciplina ) obj ;
+		if ( cargahoraria != outro . cargahoraria )
+			retorna  falso ;
+		if ( idDisciplina != outro . idDisciplina )
+			retorna  falso ;
+		if ( nomeDisciplina == null ) {
+			if ( outro . nomeDisciplina != null )
+				retorna  falso ;
+		} else  if (! nomeDisciplina . equals ( outro . nomeDisciplina ))
+			retorna  falso ;
+		retorna  verdadeiro ;
+	}
+
+	@ Substituir
+	public  String  toString () {
+		return  "Disciplina [idDisciplina=" + idDisciplina + ", nomeDisciplina=" + nomeDisciplina + ", cargahoraria="
+				+ cargahoraria + "]" ;
+	}
+
+
+
+}
+----------------------------------------------------------------------------
+
+ProgramAluno.java
+ package visão;
+
+import java.util.Scanner;
+import modelo.dao.CursoDAO;
+import modelo.dao.FábricaDAO;
+import modelo.entidades.Curso;
+
+public class TelaCurso {
+    static CursoDAO cursoDao = FábricaDAO.criarCursoDAO();
+    public static Scanner menuCurso(Scanner console) {
+        int opção = 0;
+        do {
+            System.out.println("\n\n### Tela: Curso ###");
+            System.out.println("=========================");
+            System.out.println(" | 1 - Cadastrar |");
+            System.out.println(" | 2 - Listar |");
+            System.out.println(" | 3 - Alterar |");
+            System.out.println(" | 4 - Excluir |");
+            System.out.println(" | 0 - Retornar |");
+            System.out.println("=========================");
+            System.out.print("Opção ->");
+            opção = console.nextInt();
+            console.nextLine();
+
+            switch (opção) {
+                case 1:
+                    console = cadastrar(console);
+                    break;
+                case 2:
+                    console = listar(console);
+                    break;
+                case 3:
+                    console = alterar(console);
+                    break;
+                case 4:
+                    console = excluir(console);
+                    break;
+                case 0:
+                    console = TelaPrincipal.menuPrincipal(console);
+                    break;
+                default:
+                    System.out.println("Opção inválida!");
+            }
+        } while (opção != 0);
+        return console;
+    }
+
+    private static Scanner cadastrar(Scanner console) {
+        Curso c = new Curso();
+        System.out.println("\n\n### Curso-Cadastrar ###");
+        System.out.println("=========================");
+        System.out.print(" | Nome: ");
+        c.setNomecurso(console.nextLine());
+        System.out.println("=========================");
+        cursoDao.inserir(c);
+        console.nextLine();
+        return console;
+    }
+
+    private static Scanner listar(Scanner console) {
+        System.out.println("\n\n### Curso-Listar ###");
+        System.out.println("=========================");
+        System.out.println("|Id\tNome");
+        for (Curso c : cursoDao.encontrarTodos()) {
+            System.out.println(" | " + c.getIdcurso() + "\t" + c.getNomecurso());
+        }
+        System.out.println("=========================");
+        console.nextLine();
+        return console;
+    }
+
+    private static Scanner alterar(Scanner console) {
+        Curso c = new Curso();
+        System.out.println("\n\n### Curso-Alterar ###");
+        System.out.println("=========================");
+        System.out.print(" | Id: ");
+        c.setIdcurso(console.nextInt());
+        console.nextLine();
+        System.out.print(" | Nome: ");
+        c.setNomecurso(console.nextLine());
+        System.out.println("=========================");
+        cursoDao.atualizar(c);
+        console.nextLine();
+        return console;
+    }
+
+    private static Scanner excluir(Scanner console) {
+        System.out.println("\n\n### Curso-Excluir ###");
+        System.out.println("=========================");
+        System.out.print(" | Digite o Id: ");
+        int id = console.nextInt();
+        console.nextLine();
+        System.out.println("=========================");
+        cursoDao.deleteByid(id);
+        console.nextLine();
+        return console;
+    }
+}
+
+------------------------------------------------------------------------------
+ProgramCurso.java
+package visão;
+
+import java.util.Scanner;
+import modelo.dao.CursoDAO;
+import modelo.dao.FábricaDAO;
+import modelo.entidades.Curso;
+
+public class TelaCurso {
+    static CursoDAO cursoDao = FábricaDAO.criarCursoDAO();
+    public static Scanner menuCurso(Scanner console) {
+        int opção = 0;
+        do {
+            System.out.println("\n\n### Tela: Curso ###");
+            System.out.println("=========================");
+            System.out.println(" | 1 - Cadastrar |");
+            System.out.println(" | 2 - Listar |");
+            System.out.println(" | 3 - Alterar |");
+            System.out.println(" | 4 - Excluir |");
+            System.out.println(" | 0 - Retornar |");
+            System.out.println("=========================");
+            System.out.print("Opção ->");
+            opção = console.nextInt();
+            console.nextLine();
+
+            switch (opção) {
+                case 1:
+                    console = cadastrar(console);
+                    break;
+                case 2:
+                    console = listar(console);
+                    break;
+                case 3:
+                    console = alterar(console);
+                    break;
+                case 4:
+                    console = excluir(console);
+                    break;
+                case 0:
+                    console = TelaPrincipal.menuPrincipal(console);
+                    break;
+                default:
+                    System.out.println("Opção inválida!");
+            }
+        } while (opção != 0);
+        return console;
+    }
+
+    private static Scanner cadastrar(Scanner console) {
+        Curso c = new Curso();
+        System.out.println("\n\n### Curso-Cadastrar ###");
+        System.out.println("=========================");
+        System.out.print(" | Nome: ");
+        c.setNomecurso(console.nextLine());
+        System.out.println("=========================");
+        cursoDao.inserir(c);
+        console.nextLine();
+        return console;
+    }
+
+    private static Scanner listar(Scanner console) {
+        System.out.println("\n\n### Curso-Listar ###");
+        System.out.println("=========================");
+        System.out.println("|Id\tNome");
+        for (Curso c : cursoDao.encontrarTodos()) {
+            System.out.println(" | " + c.getIdcurso() + "\t" + c.getNomecurso());
+        }
+        System.out.println("=========================");
+        console.nextLine();
+        return console;
+    }
+
+    private static Scanner alterar(Scanner console) {
+        Curso c = new Curso();
+        System.out.println("\n\n### Curso-Alterar ###");
+        System.out.println("=========================");
+        System.out.print(" | Id: ");
+        c.setIdcurso(console.nextInt());
+        console.nextLine();
+        System.out.print(" | Nome: ");
+        c.setNomecurso(console.nextLine());
+        System.out.println("=========================");
+        cursoDao.atualizar(c);
+        console.nextLine();
+        return console;
+    }
+
+    private static Scanner excluir(Scanner console) {
+        System.out.println("\n\n### Curso-Excluir ###");
+        System.out.println("=========================");
+        System.out.print(" | Digite o Id: ");
+        int id = console.nextInt();
+        console.nextLine();
+        System.out.println("=========================");
+        cursoDao.deleteByid(id);
+        console.nextLine();
+        return console;
+    }
+}
+
+------------------------------------------------------------------------------
+ProgramDisciplina.java
+visão do pacote ;
+
+importar  java . texto . ParseException ;
+importar  java . . _ lista ;
+importar  java . . _ Scanner ;
+importar  java . . _ concorrente . TimeUnit ;
+
+ modelo importado . dao . DisciplinaDAO ;
+ modelo importado . dao . FábricaDAO ;
+
+ modelo importado . entidades . Disciplina ;
+
+public  class  TelaDisciplina {
+
+	static  DisciplinaDAO  disciplinaDao = FactoryDAO . criarDisciplinaDAO ();
+
+
+	@ SuppressWarnings ( "recurso" )
+	public  static  Scanner  menuDisciplina ( console do Scanner  ) lança InterruptedException , ParseException { 
+
+		int  opção = 0 ;
+		fazer {
+			Sistema . fora . println ( "\n\n" );
+			Sistema . fora . println ( "### Tela: Disciplina ###" );
+			Sistema . fora . println ( "=========================" );
+			Sistema . fora . println ( " | 1 - Cadastrar |" );
+			Sistema . fora . println ( " | 2 - Listar |" );
+			Sistema . fora . println ( " | 3 - Alterar |" );
+			Sistema . fora . println ( " | 4 - Excluir |" );
+			Sistema . fora . println ( " | 0 - Retornar |" );
+			Sistema . fora . println ( "=========================" );
+			Sistema . fora . print ( "Opção ->" );
+			opção = console . proximoInt ();
+			console . proximaLinha ();
+
+			switch ( opção ) {
+			case  1 : console = cadastrar ( console );
+					quebrar ;
+			caso  2 :	 console = listar ( console );
+					quebrar ;
+			caso  3 : console = alterar ( console );
+					quebrar ;
+			caso  4 : console = excluir ( console );
+					quebrar ;
+			caso  0 :	 console = TelaPrincipal . menuPrincipal ( console );
+					quebrar ;
+			padrão :
+				Sistema . fora . println ( "Opção inválida!" );
+				TimeUnit . SEGUNDOS . dormir ( 1 );
+			}
+		} while ( opção != 0 );
+		 console de retorno ;
+	}
+
+
+	private  static  Scanner  excluir ( Console do Scanner  ) {
+
+		Sistema . fora . println ( "\n\n" );
+		Sistema . fora . println ( " ### Disciplina-Excluir ###" );
+		Sistema . fora . println ( "=========================" );
+		Sistema . fora . print ( " | Digite o Id: " );
+		int  id = console . proximoInt ();
+		console . proximaLinha ();
+		Sistema . fora . println ( "=========================" );
+
+		disciplinaDao . deleteByid ( id );
+
+		console . proximaLinha ();
+		 console de retorno ;
+	}
+
+
+	 alteração do Scanner estático  privado ( console do Scanner ) {  
+
+		Disciplina  d = nova  Disciplina ();
+
+		Sistema . fora . println ( "\n\n" );
+		Sistema . fora . println ( " ### Disciplina-Alterar ###" );
+		Sistema . fora . println ( "=========================" );  		
+		Sistema . fora . imprima ( " | Id: " );
+		d . setIdDisciplina ( console . nextInt ());
+		console . proximaLinha ();
+
+		Sistema . fora . print ( " | Nome: " );
+		d . setNomeDisciplina ( console . nextLine ());
+
+		Sistema . fora . print ( " | Carga Horária: " );
+		d . setCargahoraria ( console . nextInt ());
+		console . proximaLinha ();
+
+		Sistema . fora . println ( "=========================" );
+		disciplinaDao . atualizar ( d );
+
+		console . proximaLinha ();
+		 console de retorno ;
+
+	}
+
+
+	private  static  Scanner  listar ( Console do Scanner  ) {
+	List < Disciplina > disciplina = disciplinaDao . encontrarTodos ();
+
+		Sistema . fora . println ( "\n\n" );
+		Sistema . fora . println ( " ### Disciplina-Listar ###" );
+		Sistema . fora . println ( "=========================" );
+		Sistema . fora . println ( "|Id\tNome\tCargaHoraria" );
+		for ( Disciplina  d : disciplina ) {
+			Sistema . fora . println ( " | " + d . getIdDisciplina ()
+							 + "\t"  		+ d . getNomeDisciplina ()
+							 + "\t"  		+ d . getCargahoraria ());
+		}
+		Sistema . fora . println ( "=========================" );
+		console . proximaLinha ();
+		 console de retorno ;
+	}
+
+
+	private  static  Scanner  cadastrar ( Console do Scanner  ) {
+
+	Disciplina  d = nova  Disciplina ();
+
+		Sistema . fora . println ( "\n\n" );
+		Sistema . fora . println ( " ### Disciplina-Cadastrar ###" );
+		Sistema . fora . println ( "=========================" );
+		Sistema . fora . print ( " | Nome: " );
+	    d . setNomeDisciplina ( console . nextLine ());
+
+		Sistema . fora . print ( " | CargaHorário: " );
+	    d . setCargahoraria ( console . nextInt ());
+	    Sistema . fora . println ( "=========================" );
+
+	    disciplinaDao . inserir ( d );
+
+	    console . proximaLinha ();
+	     console de retorno ;
+	}
+}
+
+------------------------------------------------------------------------------
+Program.java
+ visão do pacote ;
+
+importar  java . texto . ParseException ;
+importar  java . . _ Scanner ;
+importar  java . . _ concorrente . TimeUnit ;
+
+public  class  TelaPrincipal {
+
+	public  static  Scanner  menuPrincipal ( console do Scanner  ) throws ParseException , InterruptedException { 
+
+		int  opção = 0 ;
+		fazer {
+			Sistema . fora . println ( "\n\n### Sistema de Controle Escolar ###" );
+			Sistema . fora . println ( "=========================" );
+			Sistema . fora . println ( " | 1 - Aluno |" );
+			Sistema . fora . println ( "| 2 - Curso |" );
+			Sistema . fora . println ( "| 3 - Disciplina |" );
+			Sistema . fora . println ( " | 0 - Sair |" );
+			Sistema . fora . println ( "=========================" );
+			Sistema . fora . print ( "Opção ->" );
+			opção = console . proximoInt ();
+			console . proximaLinha ();
+
+			switch ( opção ) {
+				caso  1 : retornar  TelaAluno . menuAluno ( console );
+				caso  2 : retornar  TelaCurso . menuCurso ( console );
+				caso  3 : retornar  TelaDisciplina . menuDisciplina ( console );
+				caso  0 : Sistema . fora . println ( "Aplicação foi encerrada!" );
+						quebrar ;
+				padrão :
+					Sistema . fora . println ( "Opção Inválida!" );
+					TimeUnit . SEGUNDOS . dormir ( 1 );
+			}
+		} while ( opção != 0 );
+		 console de retorno ;
+	}
+}
+-----------------------------------------------------------------------------
